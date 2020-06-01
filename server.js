@@ -58,7 +58,7 @@ server.get(`/api/users`, (req, res) => {
 //handle GET requests for /api/users/:id
 server.get(`/api/users/:id`, (req, res) => {
      const urlId = req.params.id
-     let singleUser = users.filter(user =>  user.id === Number(urlId))
+     const singleUser = users.filter(user =>  user.id === Number(urlId))
      
      if(!users){
           return res.status(500).json({ errorMessage: "The user information could not be retrieved." })
@@ -74,7 +74,7 @@ server.delete(`/api/users/:id`, (req, res) => {
      const urlId = req.params.id
      let filteredUsersArray = users.filter(user =>  user.id !== Number(urlId))
      if(!users){
-          return res.status(500).json({ errorMessage: "The user information could not be retrieved." })
+          return res.status(500).json({ errorMessage: "The user could not be removed" })
      }else if(!filteredUsersArray){
           return res.status(404).json({ message: "The user with the specified ID does not exist." })
      } else {
@@ -82,7 +82,22 @@ server.delete(`/api/users/:id`, (req, res) => {
      }
 })
 
+//handle put request to /api/users/:id
+server.put(`/api/users/:id`, (req, res) => {
+     const urlId = req.params.id
+     let singleUser = users.filter(user =>  user.id === Number(urlId))
+     const editedUser = req.body
 
+     if(!users){
+          return res.status(500).json({ errorMessage: "The user information could not be modified." })
+     } else if (!singleUser){
+          return res.status(404).json({ message: "The user with the specified ID does not exist." })
+     } else if (!editedUser.name || !editedUser.bio){
+          return res.status(400).json({ errorMessage: "Please provide name and bio for the user." })
+     } else {
+          return res.status(200).json(editedUser)
+     }
+})
 
 
 
