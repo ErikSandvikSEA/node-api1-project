@@ -65,7 +65,20 @@ server.get(`/api/users/:id`, (req, res) => {
      } else if(!singleUser){
           return res.status(404).json({ message: "The user with the specified ID does not exist." })
      } else {
-          return res.status(200).json(singleUser)
+          return res.status(200).json(singleUser[0])
+     }
+})
+
+//handle delete request to /api/users/:id
+server.delete(`/api/users/:id`, (req, res) => {
+     const urlId = req.params.id
+     let filteredUsersArray = users.filter(user =>  user.id !== Number(urlId))
+     if(!users){
+          return res.status(500).json({ errorMessage: "The user information could not be retrieved." })
+     }else if(!filteredUsersArray){
+          return res.status(404).json({ message: "The user with the specified ID does not exist." })
+     } else {
+          return res.status(200).json(filteredUsersArray)
      }
 })
 
