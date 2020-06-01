@@ -35,37 +35,42 @@ server.get(`/`, (req, res) => {
 //handle POST for '/api/users'
 server.post(`/api/users`, (req, res) => {
      const newUser = req.body
-          if(!newUser){
-               return res.status(500).json({ errorMessage: "There was an error while saving the user to the database" })
-          } else if (newUser.name && newUser.bio){
-               users.push(newUser)
-               return res.status(201).json(users)
-          } else {
+     try{
+          if (!newUser.name || !newUser.bio){
                return res.status(400).json({ errorMessage: "Please provide name and bio for the user." })
+          } else {
+               users.push(newUser)
+               return res.status(201).json(ss)
           }
+     } catch(error){
+          return res.status(500).json({ errorMessage: "There was an error while saving the user to the database" })
+     }
 })
 
 
 //handle GET requests for /api/users
 server.get(`/api/users`, (req, res) => {
-     if(!users){
-          return res.status(500).json({ errorMessage: "The users information could not be retrieved." })
-     } else {
+     try{
           return res.status(200).json(users)
-     }        
+     }
+     catch(error){
+          return res.status(500).json({ errorMessage: "The users information could not be retrieved." })
+     }     
 })
 
 //handle GET requests for /api/users/:id
 server.get(`/api/users/:id`, (req, res) => {
      const urlId = req.params.id
-     const singleUser = users.filter(user =>  user.id === Number(urlId))
+     let singleUser = users.filter(user =>  user.id === Number(urlId))
      
-     if(!users){
-          return res.status(500).json({ errorMessage: "The user information could not be retrieved." })
-     } else if(!singleUser){
+     try{
+          if(!singleUser[0]){
           return res.status(404).json({ message: "The user with the specified ID does not exist." })
-     } else {
-          return res.status(200).json(singleUser[0])
+          } else {
+               return res.status(200).json(singleUser[0])
+          }
+     } catch(error) {
+          return res.status(500).json({ errorMessage: "The user information could not be retrieved." })
      }
 })
 
@@ -73,12 +78,15 @@ server.get(`/api/users/:id`, (req, res) => {
 server.delete(`/api/users/:id`, (req, res) => {
      const urlId = req.params.id
      let filteredUsersArray = users.filter(user =>  user.id !== Number(urlId))
-     if(!users){
+
+     try{
+          if(!filteredUsersArray){
+               return res.status(404).json({ message: "The user with the specified ID does not exist." })
+          } else {
+               return res.status(200).json(filteredUsersArray)
+          }
+     } catch(error){
           return res.status(500).json({ errorMessage: "The user could not be removed" })
-     }else if(!filteredUsersArray){
-          return res.status(404).json({ message: "The user with the specified ID does not exist." })
-     } else {
-          return res.status(200).json(filteredUsersArray)
      }
 })
 
@@ -87,15 +95,16 @@ server.put(`/api/users/:id`, (req, res) => {
      const urlId = req.params.id
      let singleUser = users.filter(user =>  user.id === Number(urlId))
      const editedUser = req.body
-
-     if(!users){
+     try{
+          if (!singleUser){
+               return res.status(404).json({ message: "The user with the specified ID does not exist." })
+          } else if (!editedUser.name || !editedUser.bio){
+               return res.status(400).json({ errorMessage: "Please provide name and bio for the user." })
+          } else {
+               return res.status(200).json(editedUser)
+          }
+     } catch(error){
           return res.status(500).json({ errorMessage: "The user information could not be modified." })
-     } else if (!singleUser){
-          return res.status(404).json({ message: "The user with the specified ID does not exist." })
-     } else if (!editedUser.name || !editedUser.bio){
-          return res.status(400).json({ errorMessage: "Please provide name and bio for the user." })
-     } else {
-          return res.status(200).json(editedUser)
      }
 })
 
