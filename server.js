@@ -40,7 +40,7 @@ server.post(`/api/users`, (req, res) => {
                return res.status(400).json({ errorMessage: "Please provide name and bio for the user." })
           } else {
                users.push(newUser)
-               return res.status(201).json(ss)
+               return res.status(201).json(users)
           }
      } catch(error){
           return res.status(500).json({ errorMessage: "There was an error while saving the user to the database" })
